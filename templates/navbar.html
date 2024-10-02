@@ -8,7 +8,7 @@
         <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
              aria-labelledby="offcanvasDarkNavbarLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Bootcamp user</h5>
+                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">{% if user.is_authenticated %}@{{ user.username }}{% else %}Guest{% endif %}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
                         aria-label="Close"></button>
             </div>
@@ -32,34 +32,35 @@
                             <li><a class="dropdown-item" href="">subtask</a></li>
                         </ul>
                     </li>
-
-                    <li class="nav-item dropdown">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             Profile
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#">profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_profile' %}">profile</a></li>
                             <hr class="dropdown-divider">
-                            <li><a class="dropdown-item" href="#">logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_logout' %}">logout</a></li>
                         </ul>
 
                     </li>
-
-                    <li class="nav-item dropdown">
+                    {% elif not user.is_authenticated %}
+                        <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             login/register
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#">register</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_register' %}">register</a></li>
                             <hr class="dropdown-divider">
-                            <li><a class="dropdown-item" href="#">login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_login' %}">login</a></li>
                         </ul>
 
                     </li>
+                    {% endif %}
 
 
                 </ul>

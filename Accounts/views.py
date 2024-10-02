@@ -5,7 +5,10 @@ from django.contrib import messages
 from django.views.generic import View
 from .models import Profile
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls.base import reverse_lazy
 
 
 class RegisterUser(View):
@@ -39,6 +42,11 @@ class LoginUser(auth_views.LoginView):
     form_class = UserLoginForm
     template_name = 'Accounts/login.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('accounts:user_profile')
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         remember = form.cleaned_data['remember']
         if remember:
@@ -59,3 +67,18 @@ class ProfileUser(View):
             'profile': profile
         }
         return render(request, 'Accounts/profile.html', context)
+
+
+class LogoutUser(View):
+
+    def get(self, request):
+        logout(request)
+        messages.success(self.request, f"We Hope See You Again !!", 'success')
+        return redirect('accounts:user_login')
+
+
+class ChangePasswordUser(SuccessMessageMixin, PasswordChangeView):
+    template_name = 'Accounts/change_password.html'
+    success_message = 'Password was changed successfully'
+    success_url = reverse_lazy('accounts:user_profile')
+

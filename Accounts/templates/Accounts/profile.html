@@ -15,7 +15,7 @@
                                     <p class="text-secondary mb-1">@{{ profile.user.username }}</p>
                                     <p class="text-muted font-size-sm">{{ profile.user.email }}</p>
                                     <p class="text-muted font-size-sm">{{ profile.phone }}</p>
-                                    <a class="btn btn-primary" href="./change_password.html">Change Password</a>
+                                    <a class="btn btn-primary" href="{% url 'accounts:user_change_password' %}">Change Password</a>
 
                                 </div>
                             </div>

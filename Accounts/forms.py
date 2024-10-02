@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.contrib.auth.models import User
+from .models import Profile
 
 
 class UserRegisterForm(forms.ModelForm):
@@ -40,10 +41,18 @@ class UserRegisterForm(forms.ModelForm):
                                         'id': 'form3Example4'
                                     }
                                 ))
+    phone_number = forms.CharField(required=True, max_length=12,
+                                   widget=forms.TextInput(
+                                       attrs={
+                                           'class': 'form-control',
+                                           'id': 'form3Example7',
+                                           'name': 'phone_number'
+                                       }
+                                   ))
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name',]
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -56,6 +65,12 @@ class UserRegisterForm(forms.ModelForm):
         if len(password1) < 8:
             raise forms.ValidationError('something went wrong')
         return password1
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data['phone_number']
+        if Profile.objects.filter(phone=phone_number).exists():
+            raise forms.ValidationError('this phone already exists')
+        return phone_number
 
 
 class UserLoginForm(AuthenticationForm):

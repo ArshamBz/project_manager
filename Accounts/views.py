@@ -1,14 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import views as auth_views
-from .forms import UserLoginForm, UserRegisterForm
+from .forms import UserLoginForm, UserRegisterForm, UserProfileUpdateForm
 from django.contrib import messages
-from django.views.generic import View
+from django.views.generic import View, UpdateView
 from .models import Profile
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls.base import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class RegisterUser(View):
@@ -82,3 +83,25 @@ class ChangePasswordUser(SuccessMessageMixin, PasswordChangeView):
     success_message = 'Password was changed successfully'
     success_url = reverse_lazy('accounts:user_profile')
 
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = UserProfileUpdateForm
+    template_name = 'accounts/update_profile.html'
+    success_url = reverse_lazy('accounts:user_profile')  # Redirect after successful update
+
+    def get_form_kwargs(self):
+        """Pass the current user to the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_object(self, queryset=None):
+        """Return the profile of the logged-in user."""
+        return self.request.user.profile
+
+    def form_valid(self, form):
+        """If the form is valid, save both the user and profile."""
+        form.save()
+        messages.success(self.request, 'Your profile has been updated successfully!')
+        return super().form_valid(form)

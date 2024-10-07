@@ -3,7 +3,7 @@
 {% block content %}
 
     <div class="container mt-4">
-        <a href="#" class="btn bg-success">new project</a>
+        <a href="{% url 'projects:project_create' %}" class="btn bg-success">new project</a>
         <div class="row">
             {% for project in projects %}
                 <div class="col-4 mt-2 mb-4">
